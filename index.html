@@ -275,19 +275,20 @@
 
     function searchAlbums(query) {
       removeOldScript();
-
+    
       window.handleAlbumResponse = function(data) {
         document.getElementById('sectionTitle').innerText = 'Arama Sonuçları';
         document.getElementById('backBtn').style.display = 'none';
         updateContentPosition();
-
+    
         lastAlbumResults = data.results || [];
         renderAlbumGrid(lastAlbumResults);
       };
-
+    
       const script = document.createElement('script');
       script.id = 'jsonp-script';
-      script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&limit=25&callback=handleAlbumResponse`;
+      // Limit 200'e çıkarıldı
+      script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&limit=200&callback=handleAlbumResponse`;
       document.body.appendChild(script);
     }
 
