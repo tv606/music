@@ -189,11 +189,15 @@
     </div>
   </div>
 
-  <!-- Sabit Navigasyon -->
+<!-- Sabit Navigasyon -->
   <nav class="nav-bar">
-    <a href="#" class="nav-item active" id="navSearch" onclick="switchTab('search')">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <span>Arama</span>
+    <a href="#" class="nav-item active" id="navTopSongs" onclick="switchTab('topSongs')">
+      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      <span>Top Šarkı</span>
+    </a>
+    <a href="#" class="nav-item" id="navTopAlbums" onclick="switchTab('topAlbums')">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      <span>Top Albüm</span>
     </a>
     <a href="#" class="nav-item" id="navFavs" onclick="switchTab('favs')">
       <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -206,7 +210,7 @@
 <script>
     const audio = document.getElementById('audioPlayer');
     let timer;
-    let currentTab = 'search';
+    let currentTab = 'topSongs'; // Varsayılan sekme
     let currentTrackIndex = -1;
     let currentPlaylist = [];
     let lastAlbumResults = [];
@@ -232,13 +236,20 @@
 
     function switchTab(tab) {
       currentTab = tab;
-      document.getElementById('navSearch').classList.toggle('active', tab === 'search');
+      document.getElementById('navTopSongs').classList.toggle('active', tab === 'topSongs');
+      document.getElementById('navTopAlbums').classList.toggle('active', tab === 'topAlbums');
       document.getElementById('navFavs').classList.toggle('active', tab === 'favs');
 
-      if (tab === 'search') {
-        document.getElementById('pageTitle').innerText = 'Ara';
+      document.getElementById('search').value = '';
+
+      if (tab === 'topSongs') {
+        document.getElementById('pageTitle').innerText = 'Top 100';
         document.getElementById('searchBoxContainer').style.display = 'block';
-        showAlbumsView();
+        loadTopSongs();
+      } else if (tab === 'topAlbums') {
+        document.getElementById('pageTitle').innerText = 'Top 100';
+        document.getElementById('searchBoxContainer').style.display = 'block';
+        loadTopAlbums();
       } else {
         document.getElementById('pageTitle').innerText = 'Kütüphanem';
         document.getElementById('searchBoxContainer').style.display = 'none';
@@ -252,11 +263,11 @@
       if (oldScript) oldScript.remove();
     }
 
-    function loadTop100() {
+    function loadTopSongs() {
       removeOldScript();
 
-      window.handleTop100 = function(data) {
-        document.getElementById('sectionTitle').innerText = 'Top 100 - Dünya';
+      window.handleTopSongs = function(data) {
+        document.getElementById('sectionTitle').innerText = 'Top 100 Şarkı - Dünya';
         document.getElementById('backBtn').style.display = 'none';
         updateContentPosition();
 
@@ -273,7 +284,32 @@
 
       const script = document.createElement('script');
       script.id = 'jsonp-script';
-      script.src = 'https://itunes.apple.com/us/rss/topsongs/limit=100/json?callback=handleTop100';
+      script.src = 'https://itunes.apple.com/us/rss/topsongs/limit=100/json?callback=handleTopSongs';
+      document.body.appendChild(script);
+    }
+
+    function loadTopAlbums() {
+      removeOldScript();
+
+      window.handleTopAlbums = function(data) {
+        document.getElementById('sectionTitle').innerText = 'Top 100 Albüm - Dünya';
+        document.getElementById('backBtn').style.display = 'none';
+        updateContentPosition();
+
+        const entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
+        lastAlbumResults = entries.map(item => ({
+          collectionId: item.id.attributes['im:id'],
+          collectionName: item['im:name'].label,
+          artistName: item['im:artist'].label,
+          artworkUrl100: item['im:image'][2].label
+        }));
+
+        renderAlbumGrid(lastAlbumResults);
+      };
+
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = 'https://itunes.apple.com/us/rss/topalbums/limit=100/json?callback=handleTopAlbums';
       document.body.appendChild(script);
     }
 
@@ -282,7 +318,7 @@
       container.innerHTML = '';
 
       if (!tracks || tracks.length === 0) {
-        container.innerHTML = '<div style="color:#8e8e93; font-size:14px; text-align:center; margin-top:20px;">İçerik bulunamadı.</div>';
+        container.innerHTML = '<div style="color:#8e8e93; font-size:14px; text-align:center; margin-top:20px;">Şarkı bulunamadı.</div>';
         return;
       }
 
@@ -426,7 +462,7 @@
       if (index > -1) {
         favoriteAlbums.splice(index, 1);
       } else {
-        const albumObj = lastAlbumResults.find(a => a.collectionId === collectionId);
+        const albumObj = lastAlbumResults.find(a => a.collectionId == collectionId);
         if (albumObj) favoriteAlbums.push(albumObj);
       }
 
@@ -511,22 +547,20 @@
     }
 
     function backToPreviousView() {
-      if (currentTab === 'search') {
-        showAlbumsView();
+      if (currentTab === 'topSongs') {
+        loadTopSongs();
+      } else if (currentTab === 'topAlbums') {
+        loadTopAlbums();
       } else {
         renderFavorites();
       }
     }
 
     function clearContent() {
-      loadTop100();
-    }
-
-    function showAlbumsView() {
-      if (lastAlbumResults.length > 0) {
-        renderAlbumGrid(lastAlbumResults);
-      } else {
-        clearContent();
+      if (currentTab === 'topSongs') {
+        loadTopSongs();
+      } else if (currentTab === 'topAlbums') {
+        loadTopAlbums();
       }
     }
 
@@ -590,7 +624,7 @@
       })[m]);
     }
 
-    loadTop100();
+    loadTopSongs();
     window.addEventListener('resize', updateContentPosition);
   </script>
 </body>
