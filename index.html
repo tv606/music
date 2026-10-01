@@ -256,7 +256,7 @@
       removeOldScript();
 
       window.handleTop100 = function(data) {
-        document.getElementById('sectionTitle').innerText = 'Top 100 - Türkiye';
+        document.getElementById('sectionTitle').innerText = 'Top 100 - Dünya';
         document.getElementById('backBtn').style.display = 'none';
         updateContentPosition();
 
@@ -273,7 +273,7 @@
 
       const script = document.createElement('script');
       script.id = 'jsonp-script';
-      script.src = 'https://itunes.apple.com/tr/rss/topsongs/limit=100/json?callback=handleTop100';
+      script.src = 'https://itunes.apple.com/us/rss/topsongs/limit=100/json?callback=handleTop100';
       document.body.appendChild(script);
     }
 
