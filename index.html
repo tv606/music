@@ -340,7 +340,7 @@
     }
 
     .nav-bar {
-      position: absolute;
+      position: fixed;
       bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Nav bar 12px yukarı kaldırıldı */
       left: 12px;
       right: 12px;
@@ -580,22 +580,25 @@
     }
 
     function searchAlbums(query) {
-      removeOldScript();
+          removeOldScript();
 
-      window.handleArtistResponse = function(data) {
-        document.getElementById('sectionTitle').innerText = 'Sanatçı Sonuçları';
-        document.getElementById('backBtn').style.display = 'none';
-        updateContentPosition();
+          window.handleArtistResponse = function(data) {
+            document.getElementById('sectionTitle').innerText = 'Sanatçı Sonuçları';
+            document.getElementById('backBtn').style.display = 'none';
+            updateContentPosition();
 
-        const artists = (data.results || []).filter(item => item.wrapperType === 'artist');
-        renderArtistGrid(artists);
-      };
+            const artists = (data.results || []).filter(item => item.wrapperType === 'artist');
+            renderArtistGrid(artists);
 
-      const script = document.createElement('script');
-      script.id = 'jsonp-script';
-      script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicArtist&limit=25&callback=handleArtistResponse`;
-      document.body.appendChild(script);
-    }
+            if (document.activeElement) document.activeElement.blur();
+            document.body.focus();
+          };
+
+          const script = document.createElement('script');
+          script.id = 'jsonp-script';
+          script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicArtist&limit=25&callback=handleArtistResponse`;
+          document.body.appendChild(script);
+        }
 
     function renderArtistGrid(artists) {
       const container = document.getElementById('contentContainer');
