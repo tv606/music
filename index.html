@@ -65,10 +65,10 @@
     }
 
     .album-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      width: 100%;
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+     gap: 12px;
+     width: 100%;
     }
 
     .album-card {
@@ -306,9 +306,9 @@
         card.className = 'album-card';
         
         card.innerHTML = `
-          <div style="width:100%; aspect-ratio:1/1; background:rgba(255,255,255,0.06); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; border:1px solid rgba(255,255,255,0.08);">🎤</div>
-          <div class="album-title" style="text-align:center; margin-top:8px;">${escapeHtml(artist.artistName)}</div>
-          <div class="album-artist" style="text-align:center;">${escapeHtml(artist.primaryGenreName || 'Sanatçı')}</div>
+          <div style="width:100%; aspect-ratio:1/1; background:rgba(255,255,255,0.06); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:32px; border:1px solid rgba(255,255,255,0.08);">🎤</div>
+          <div class="album-title">${escapeHtml(artist.artistName)}</div>
+          <div class="album-artist">${escapeHtml(artist.primaryGenreName || 'Sanatçı')}</div>
         `;
 
         card.onclick = () => loadArtistDiscography(artist.artistId, artist.artistName);
