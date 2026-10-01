@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Music</title>
+  <title>Top 100</title>
   <style>
     * {
       box-sizing: border-box;
@@ -12,19 +12,28 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      position: fixed;
       background-color: #0d0d0f;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden;
-      height: 100dvh;
     }
 
+    /* Ana Ekran Düzeni */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Üst Sabit Header */
     .sticky-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      flex-shrink: 0;
       background: rgba(13, 13, 15, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -32,8 +41,8 @@
       padding-left: 20px;
       padding-right: 20px;
       padding-bottom: 12px;
-      z-index: 10;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 10;
     }
 
     .sticky-header h1 {
@@ -87,19 +96,16 @@
       display: none;
     }
 
+    /* Kaydırılabilir İçerik Alanı */
     .scrollable-content {
-      position: absolute;
-      top: 140px;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 12px 20px calc(60px + env(safe-area-inset-bottom)) 20px;
-      scrollbar-width: thin;
-      scrollbar-color: #232328 #0d0d0f;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 20px;
     }
 
+    /* Şarkı Listesi Düzeni */
     .track-list {
       display: flex;
       flex-direction: column;
@@ -168,33 +174,30 @@
 
     /* Albüm Grid Düzeni */
     .album-grid {
-     display: grid;
-     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-     gap: 12px;
-     width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
     }
 
     .album-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 10px;
-      border-radius: 14px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
       position: relative;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      box-sizing: border-box;
       min-width: 0;
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
-    .album-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.06); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
     .album-card img {
       width: 100%;
-      aspect-ratio: 1/1;
-      border-radius: 10px;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
       object-fit: cover;
       display: block;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-bottom: 8px;
     }
 
     .album-title {
@@ -238,9 +241,10 @@
       fill: #ff2d55;
     }
 
+    /* Oyuncu Barı */
     .player-bar {
       position: fixed;
-      bottom: calc(50px + env(safe-area-inset-bottom));
+      bottom: calc(52px + env(safe-area-inset-bottom));
       left: 12px;
       right: 12px;
       background: rgba(28, 28, 32, 0.9);
@@ -339,12 +343,9 @@
       width: 24px;
     }
 
+    /* Alt Navigasyon Barı */
     .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: auto;
+      flex-shrink: 0;
       background: rgba(13, 13, 15, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -355,9 +356,8 @@
       padding-bottom: max(env(safe-area-inset-bottom), 4px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 30;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
     }
+
     .nav-item {
       display: flex;
       flex-direction: column;
@@ -382,19 +382,36 @@
 </head>
 <body>
 
-  <header class="sticky-header" id="stickyHeader">
-    <h1 id="pageTitle">Music</h1>
-    <div class="search-box" id="searchBoxContainer">
-      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" id="search" placeholder="Sanatçı ara..." oninput="debounceSearch(this.value)">
-    </div>
-    <div class="section-title-bar">
-      <button class="back-btn" id="backBtn" onclick="backToPreviousView()">‹ Geri</button>
-      <div class="section-title" id="sectionTitle">Top 100 Şarkı - Dünya</div>
-    </div>
-  </header>
+  <div class="app-container">
+    <header class="sticky-header" id="stickyHeader">
+      <h1 id="pageTitle">Top 100</h1>
+      <div class="search-box" id="searchBoxContainer">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="search" placeholder="Sanatçı ara..." oninput="debounceSearch(this.value)">
+      </div>
+      <div class="section-title-bar">
+        <button class="back-btn" id="backBtn" onclick="backToPreviousView()">‹ Geri</button>
+        <div class="section-title" id="sectionTitle">Top 100 Şarkı - Dünya</div>
+      </div>
+    </header>
 
-  <main class="scrollable-content" id="contentContainer"></main>
+    <main class="scrollable-content" id="contentContainer"></main>
+
+    <nav class="nav-bar">
+      <a href="#" class="nav-item active" id="navTopSongs" onclick="switchTab('topSongs')">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        <span>Top Şarkı</span>
+      </a>
+      <a href="#" class="nav-item" id="navTopAlbums" onclick="switchTab('topAlbums')">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <span>Top Albüm</span>
+      </a>
+      <a href="#" class="nav-item" id="navFavs" onclick="switchTab('favs')">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>Favorilerim</span>
+      </a>
+    </nav>
+  </div>
 
   <div class="player-bar" id="playerBar">
     <div class="player-top">
@@ -421,21 +438,6 @@
     </div>
   </div>
 
-  <nav class="nav-bar">
-    <a href="#" class="nav-item active" id="navTopSongs" onclick="switchTab('topSongs')">
-      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-      <span>Top Şarkı</span>
-    </a>
-    <a href="#" class="nav-item" id="navTopAlbums" onclick="switchTab('topAlbums')">
-      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-      <span>Top Albüm</span>
-    </a>
-    <a href="#" class="nav-item" id="navFavs" onclick="switchTab('favs')">
-      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-      <span>Favorilerim</span>
-    </a>
-  </nav>
-
   <audio id="audioPlayer" ontimeupdate="updateProgress()" onended="onAudioEnded()"></audio>
 
   <script>
@@ -446,13 +448,6 @@
     let currentPlaylist = [];
     let lastAlbumResults = [];
     let favoriteAlbums = JSON.parse(localStorage.getItem('fav_albums') || '[]');
-
-    function updateContentPosition() {
-      const header = document.getElementById('stickyHeader');
-      if (header) {
-        document.getElementById('contentContainer').style.top = header.offsetHeight + 'px';
-      }
-    }
 
     function debounceSearch(val) {
       clearTimeout(timer);
@@ -486,7 +481,6 @@
         document.getElementById('searchBoxContainer').style.display = 'none';
         renderFavorites();
       }
-      setTimeout(updateContentPosition, 50);
     }
 
     function removeOldScript() {
@@ -500,7 +494,6 @@
       window.handleTopSongs = function(data) {
         document.getElementById('sectionTitle').innerText = 'Top 100 Şarkı - Dünya';
         document.getElementById('backBtn').style.display = 'none';
-        updateContentPosition();
 
         const entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
         currentPlaylist = entries.map(item => ({
@@ -525,7 +518,6 @@
       window.handleTopAlbums = function(data) {
         document.getElementById('sectionTitle').innerText = 'Top 100 Albüm - Dünya';
         document.getElementById('backBtn').style.display = 'none';
-        updateContentPosition();
 
         const entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
         lastAlbumResults = entries.map(item => ({
@@ -587,7 +579,6 @@
       window.handleArtistResponse = function(data) {
         document.getElementById('sectionTitle').innerText = 'Sanatçı Sonuçları';
         document.getElementById('backBtn').style.display = 'none';
-        updateContentPosition();
 
         const artists = (data.results || []).filter(item => item.wrapperType === 'artist');
         renderArtistGrid(artists);
@@ -616,7 +607,7 @@
         card.className = 'album-card';
         
         card.innerHTML = `
-          <div style="width:100%; aspect-ratio:1/1; background:rgba(255,255,255,0.06); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:32px; border:1px solid rgba(255,255,255,0.08);">🎤</div>
+          <div style="width:100%; aspect-ratio:1/1; background:rgba(255,255,255,0.06); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:32px; border:1px solid rgba(255,255,255,0.08); margin-bottom:8px;">🎤</div>
           <div class="album-title">${escapeHtml(artist.artistName)}</div>
           <div class="album-artist">${escapeHtml(artist.primaryGenreName || 'Sanatçı')}</div>
         `;
@@ -634,7 +625,6 @@
       window.handleDiscographyResponse = function(data) {
         document.getElementById('sectionTitle').innerText = `${artistName} - Albümler`;
         document.getElementById('backBtn').style.display = 'block';
-        updateContentPosition();
 
         lastAlbumResults = (data.results || []).filter(item => item.wrapperType === 'collection');
         renderAlbumGrid(lastAlbumResults);
@@ -709,7 +699,6 @@
     function renderFavorites() {
       document.getElementById('sectionTitle').innerText = 'Favori Albümlerim';
       document.getElementById('backBtn').style.display = 'none';
-      updateContentPosition();
       renderAlbumGrid(favoriteAlbums);
     }
 
@@ -720,7 +709,6 @@
         const container = document.getElementById('contentContainer');
         document.getElementById('sectionTitle').innerText = albumName;
         document.getElementById('backBtn').style.display = 'block';
-        updateContentPosition();
 
         container.innerHTML = '';
 
@@ -856,12 +844,6 @@
     }
 
     loadTopSongs();
-    window.addEventListener('resize', updateContentPosition);
-
-    document.getElementById('search').addEventListener('blur', () => {
-  window.scrollTo(0, 0);
-  setTimeout(updateContentPosition, 100);
-});
   </script>
 </body>
 </html>
