@@ -203,7 +203,7 @@
 
   <audio id="audioPlayer" ontimeupdate="updateProgress()" onended="onAudioEnded()"></audio>
 
-  <script>
+<script>
     const audio = document.getElementById('audioPlayer');
     let timer;
     let currentTab = 'search';
@@ -213,15 +213,17 @@
     let favoriteAlbums = JSON.parse(localStorage.getItem('fav_albums') || '[]');
 
     function updateContentPosition() {
-      const headerHeight = document.getElementById('stickyHeader').offsetHeight;
-      document.getElementById('contentContainer').style.top = headerHeight + 'px';
+      const header = document.getElementById('stickyHeader');
+      if (header) {
+        document.getElementById('contentContainer').style.top = header.offsetHeight + 'px';
+      }
     }
 
     function debounceSearch(val) {
       clearTimeout(timer);
       timer = setTimeout(() => {
         if (!val || val.trim().length < 2) {
-          loadNewReleases();
+          clearContent();
         } else {
           searchAlbums(val);
         }
@@ -250,25 +252,66 @@
       if (oldScript) oldScript.remove();
     }
 
-    function loadNewReleases() {
+    function loadTop100() {
       removeOldScript();
 
-      window.handleAlbumResponse = function(data) {
-        document.getElementById('sectionTitle').innerText = 'Yeni Çıkanlar';
+      window.handleTop100 = function(data) {
+        document.getElementById('sectionTitle').innerText = 'Top 100 - Türkiye';
         document.getElementById('backBtn').style.display = 'none';
         updateContentPosition();
 
-        lastAlbumResults = (data.results || []).sort((a, b) => {
-          return new Date(b.releaseDate || 0) - new Date(a.releaseDate || 0);
-        });
-        
-        renderAlbumGrid(lastAlbumResults);
+        const entries = (data.feed && data.feed.entry) ? data.feed.entry : [];
+        currentPlaylist = entries.map(item => ({
+          trackName: item['im:name'].label,
+          artistName: item['im:artist'].label,
+          artworkUrl100: item['im:image'][2].label,
+          previewUrl: item.link && item.link[1] ? item.link[1].attributes.href : ''
+        }));
+
+        renderTrackList(currentPlaylist);
       };
 
       const script = document.createElement('script');
       script.id = 'jsonp-script';
-      script.src = `https://itunes.apple.com/search?term=yeni&country=tr&entity=album&limit=30&callback=handleAlbumResponse`;
+      script.src = 'https://itunes.apple.com/tr/rss/topsongs/limit=100/json?callback=handleTop100';
       document.body.appendChild(script);
+    }
+
+    function renderTrackList(tracks) {
+      const container = document.getElementById('contentContainer');
+      container.innerHTML = '';
+
+      if (!tracks || tracks.length === 0) {
+        container.innerHTML = '<div style="color:#8e8e93; font-size:14px; text-align:center; margin-top:20px;">İçerik bulunamadı.</div>';
+        return;
+      }
+
+      const list = document.createElement('div');
+      list.className = 'track-list';
+
+      tracks.forEach((track, idx) => {
+        const div = document.createElement('div');
+        div.className = 'track-card';
+        if (idx === currentTrackIndex) div.classList.add('active');
+
+        div.onclick = () => playTrackAtIndex(idx);
+
+        div.innerHTML = `
+          <div class="track-left">
+            <img src="${track.artworkUrl100}" alt="">
+            <div class="track-info">
+              <div class="track-title">${escapeHtml(track.trackName)}</div>
+              <div class="track-artist">${escapeHtml(track.artistName)}</div>
+            </div>
+          </div>
+          <button class="play-icon-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        `;
+        list.appendChild(div);
+      });
+
+      container.appendChild(list);
     }
 
     function searchAlbums(query) {
@@ -421,35 +464,7 @@
           return;
         }
 
-        const list = document.createElement('div');
-        list.className = 'track-list';
-
-        currentPlaylist.forEach((track, idx) => {
-          const div = document.createElement('div');
-          div.className = 'track-card';
-          if (idx === currentTrackIndex) div.classList.add('active');
-
-          const title = track.trackName || 'Bilinmeyen Şarkı';
-          const cover = track.artworkUrl100 || '';
-
-          div.onclick = () => playTrackAtIndex(idx);
-
-          div.innerHTML = `
-            <div class="track-left">
-              <img src="${cover}" alt="">
-              <div class="track-info">
-                <div class="track-title">${escapeHtml(title)}</div>
-                <div class="track-artist">${escapeHtml(artistName)}</div>
-              </div>
-            </div>
-            <button class="play-icon-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-          `;
-          list.appendChild(div);
-        });
-
-        container.appendChild(list);
+        renderTrackList(currentPlaylist);
       };
 
       const script = document.createElement('script');
@@ -503,11 +518,15 @@
       }
     }
 
+    function clearContent() {
+      loadTop100();
+    }
+
     function showAlbumsView() {
       if (lastAlbumResults.length > 0) {
         renderAlbumGrid(lastAlbumResults);
       } else {
-        loadNewReleases();
+        clearContent();
       }
     }
 
@@ -562,7 +581,7 @@
     }
 
     function escapeHtml(text) {
-      return text.replace(/[&<>"']/g, m => ({
+      return (text || '').replace(/[&<>"']/g, m => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -571,7 +590,7 @@
       })[m]);
     }
 
-    loadNewReleases();
+    loadTop100();
     window.addEventListener('resize', updateContentPosition);
   </script>
 </body>
