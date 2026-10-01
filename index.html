@@ -17,7 +17,7 @@
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
-      height: 100vh;
+      height: 100dvh;
     }
 
     .sticky-header {
@@ -355,8 +355,9 @@
       padding-bottom: max(env(safe-area-inset-bottom), 4px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 30;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
-
     .nav-item {
       display: flex;
       flex-direction: column;
@@ -856,6 +857,11 @@
 
     loadTopSongs();
     window.addEventListener('resize', updateContentPosition);
+
+    document.getElementById('search').addEventListener('blur', () => {
+  window.scrollTo(0, 0);
+  setTimeout(updateContentPosition, 100);
+});
   </script>
 </body>
 </html>
