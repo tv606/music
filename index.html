@@ -17,12 +17,24 @@
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
-      height: 100dvh; /* 100vh yerine 100dvh kullanıldı */
+      height: 100dvh;
     }
 
-
-
-
+    .bg-album-cover {
+      position: fixed;
+      top: -5%;
+      left: -5%;
+      width: 110vw;
+      height: 110vh;
+      background-size: cover;
+      background-position: center;
+      filter: blur(45px) brightness(0.60);
+      -webkit-filter: blur(45px) brightness(0.60);
+      transform: scale(1.05);
+      transition: background-image 0.8s ease-in-out;
+      z-index: 0;
+      pointer-events: none;
+    }
 
     .sticky-header {
       position: fixed;
@@ -58,7 +70,7 @@
       border-radius: 10px;
       padding: 10px 12px 10px 36px;
       color: #fff;
-      font-size: 16px; /* 15px yerine 16px yapın */
+      font-size: 16px;
       outline: none;
     }
 
@@ -99,7 +111,7 @@
       right: 0;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 12px 20px calc(140px + env(safe-area-inset-bottom, 0px)) 20px; /* Liste altı boşluğu artırıldı */
+      padding: 12px 20px calc(140px + env(safe-area-inset-bottom, 0px)) 20px;
       scrollbar-width: thin;
       scrollbar-color: #232328 #0d0d0f;
     }
@@ -170,12 +182,11 @@
       padding: 4px;
     }
 
-    /* Albüm Grid Düzeni */
     .album-grid {
-     display: grid;
-     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-     gap: 12px;
-     width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      width: 100%;
     }
 
     .album-card {
@@ -191,7 +202,13 @@
       min-width: 0;
       transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
-    .album-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.06); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+    .album-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
     .album-card img {
       width: 100%;
       aspect-ratio: 1/1;
@@ -244,7 +261,7 @@
 
     .player-bar {
       position: fixed;
-      bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Player bar yukarı taşındı */
+      bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       left: 12px;
       right: 12px;
       background: rgba(255, 255, 255, 1);
@@ -292,7 +309,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color:#000000;
+      color: #000000;
     }
 
     .player-artist {
@@ -316,6 +333,28 @@
       cursor: pointer;
     }
 
+    .reverse-toggle-btn {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.08);
+      font-size: 11px;
+      font-weight: 700;
+      color: #606060;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .reverse-toggle-btn.active {
+      background: #ff2d55;
+      color: #ffffff;
+      fill: #ffffff !important;
+    }
+
+    .reverse-toggle-btn svg {
+      fill: currentColor;
+    }
+
     .progress-container {
       display: flex;
       align-items: center;
@@ -325,7 +364,7 @@
     .progress-bar {
       flex: 1;
       height: 4px;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.15);
       border-radius: 2px;
       position: relative;
       cursor: pointer;
@@ -346,7 +385,7 @@
 
     .nav-bar {
       position: fixed;
-      bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Nav bar 12px yukarı kaldırıldı */
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
       left: 12px;
       right: 12px;
       height: 60px;
@@ -357,7 +396,7 @@
       justify-content: space-around;
       align-items: center;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px; /* Yüzen görünüm için kavis eklendi */
+      border-radius: 18px;
       z-index: 30;
     }
 
@@ -381,20 +420,17 @@
       height: 22px;
       fill: currentColor;
     }
-
-
-    #search, #search:* {
-  title: none !important;
-}
   </style>
 </head>
 <body>
+
+  <div class="bg-album-cover" id="bgCover"></div>
 
   <header class="sticky-header" id="stickyHeader">
     <h1 id="pageTitle">Music</h1>
     <div class="search-box" id="searchBoxContainer">
       <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" id="search" placeholder="Sanatçı ara..." title="">
+      <input type="text" id="search" placeholder="Sanatçı ara...">
     </div>
     <div class="section-title-bar">
       <button class="back-btn" id="backBtn" onclick="backToPreviousView()">‹ Geri</button>
@@ -414,6 +450,10 @@
         </div>
       </div>
       <div class="player-controls">
+        <button class="reverse-toggle-btn" id="reverseBtn" onclick="toggleReverseMode()">
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          REV
+        </button>
         <button onclick="playPrevTrack()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
         <button onclick="togglePlay()"><svg id="playIcon" width="24" height="24" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
         <button onclick="playNextTrack()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
@@ -425,7 +465,7 @@
       <div class="progress-bar" onclick="seekAudio(event)">
         <div class="progress-fill" id="progressFill"></div>
       </div>
-      <span class="time-text" id="durationTime">0:00</span>
+      <span class="time-text" id="durationTime">1:26</span>
     </div>
   </div>
 
@@ -444,10 +484,25 @@
     </a>
   </nav>
 
-  <audio id="audioPlayer" ontimeupdate="updateProgress()" onended="onAudioEnded()"></audio>
-
   <script>
-    const audio = document.getElementById('audioPlayer');
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    let mixedBuffer = null;
+    let isReverseMode = false;
+    
+    let currentSource = null;
+    let gainNode = null;
+
+    const CROSSFADE_TIME = 2; // 2 saniye geçiş
+    const FADE_IN_TIME = 2;   // İlk giriş fade in süresi (2 sn)
+    const FADE_OUT_TIME = 2;  // Bitiş fade out süresi (2 sn)
+    const TARGET_DURATION = 86; // 3 x 30s eksi 2 x 2s crossfade = 86 sn
+
+    let playStartTime = 0;
+    let elapsedBeforePause = 0;
+    let isPlaying = false;
+    let animationFrameId = null;
+
     let timer;
     let currentTab = 'topSongs';
     let currentTrackIndex = -1;
@@ -504,7 +559,6 @@
 
     function loadTopSongs() {
       removeOldScript();
-
       window.handleTopSongs = function(data) {
         document.getElementById('sectionTitle').innerText = 'Top 100 Şarkı - Dünya';
         document.getElementById('backBtn').style.display = 'none';
@@ -529,7 +583,6 @@
 
     function loadTopAlbums() {
       removeOldScript();
-
       window.handleTopAlbums = function(data) {
         document.getElementById('sectionTitle').innerText = 'Top 100 Albüm - Dünya';
         document.getElementById('backBtn').style.display = 'none';
@@ -589,23 +642,23 @@
       container.appendChild(list);
     }
 
-function searchAlbums(query) {
-  removeOldScript();
+    function searchAlbums(query) {
+      removeOldScript();
+      window.handleArtistResponse = function(data) {
+        document.getElementById('sectionTitle').innerText = 'Sanatçı Sonuçları';
+        document.getElementById('backBtn').style.display = 'none';
+        updateContentPosition();
 
-  window.handleArtistResponse = function(data) {
-    document.getElementById('sectionTitle').innerText = 'Sanatçı Sonuçları';
-    document.getElementById('backBtn').style.display = 'none';
-    updateContentPosition();
+        const artists = (data.results || []).filter(item => item.wrapperType === 'artist');
+        renderArtistGrid(artists);
+      };
 
-    const artists = (data.results || []).filter(item => item.wrapperType === 'artist');
-    renderArtistGrid(artists);
-  };
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicArtist&limit=25&callback=handleArtistResponse`;
+      document.body.appendChild(script);
+    }
 
-  const script = document.createElement('script');
-  script.id = 'jsonp-script';
-  script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicArtist&limit=25&callback=handleArtistResponse`;
-  document.body.appendChild(script);
-}
     function renderArtistGrid(artists) {
       const container = document.getElementById('contentContainer');
       container.innerHTML = '';
@@ -637,7 +690,6 @@ function searchAlbums(query) {
 
     function loadArtistDiscography(artistId, artistName) {
       removeOldScript();
-
       window.handleDiscographyResponse = function(data) {
         document.getElementById('sectionTitle').innerText = `${artistName} - Albümler`;
         document.getElementById('backBtn').style.display = 'block';
@@ -722,7 +774,6 @@ function searchAlbums(query) {
 
     function loadAlbumTracks(collectionId, albumName, artistName) {
       removeOldScript();
-
       window.handleTrackResponse = function(data) {
         const container = document.getElementById('contentContainer');
         document.getElementById('sectionTitle').innerText = albumName;
@@ -730,7 +781,6 @@ function searchAlbums(query) {
         updateContentPosition();
 
         container.innerHTML = '';
-
         currentPlaylist = data.results.filter(item => item.wrapperType === 'track' && item.previewUrl);
 
         if (currentPlaylist.length === 0) {
@@ -747,13 +797,95 @@ function searchAlbums(query) {
       document.body.appendChild(script);
     }
 
-    function playTrackAtIndex(index) {
+    // Gerçek kesintisiz crossfade mix, başa Fade-In ve sona Fade-Out ekler
+    function buildSeamlessMixBuffer(rawBuffer, isReverse) {
+      const sampleRate = rawBuffer.sampleRate;
+      const numChannels = rawBuffer.numberOfChannels;
+      const rawLen = rawBuffer.length;
+      
+      const pLen = Math.min(rawLen, Math.floor(30 * sampleRate)); // Her parça tam 30 sn
+      const crossSamples = Math.floor(CROSSFADE_TIME * sampleRate); // 2 sn çakışma
+      const fadeInSamples = Math.floor(FADE_IN_TIME * sampleRate); // 2 sn giriş fade-in
+      const fadeOutSamples = Math.floor(FADE_OUT_TIME * sampleRate); // 2 sn çıkış fade-out
+
+      // Toplam zaman: Part1 (28s) + Part2 (28s) + Part3 (30s) = 86s
+      const totalSamples = (pLen - crossSamples) * 2 + pLen;
+      
+      const outBuffer = audioCtx.createBuffer(numChannels, totalSamples, sampleRate);
+
+      for (let ch = 0; ch < numChannels; ch++) {
+        const srcData = rawBuffer.getChannelData(ch);
+        const outData = outBuffer.getChannelData(ch);
+
+        const getSample = (idx) => {
+          if (idx < 0 || idx >= pLen) return 0;
+          return isReverse ? srcData[pLen - 1 - idx] : srcData[idx];
+        };
+
+        // Offset konumları: Part 1 -> 0, Part 2 -> 28s, Part 3 -> 56s
+        const p1Start = 0;
+        const p2Start = pLen - crossSamples;
+        const p3Start = (pLen - crossSamples) * 2;
+
+        for (let i = 0; i < totalSamples; i++) {
+          let val = 0;
+
+          // Parça 1 (0s - 30s)
+          if (i >= p1Start && i < p1Start + pLen) {
+            const localIdx = i - p1Start;
+            let gain = 1;
+
+            if (localIdx < fadeInSamples) {
+              gain = localIdx / fadeInSamples; // 0. saniyede yavaşça giriş (Fade-In)
+            } else if (localIdx >= pLen - crossSamples) {
+              gain = (pLen - localIdx) / crossSamples; // Çıkış yumuşatma
+            }
+            val += getSample(localIdx) * gain;
+          }
+
+          // Parça 2 (28s - 58s)
+          if (i >= p2Start && i < p2Start + pLen) {
+            const localIdx = i - p2Start;
+            let gain = 1;
+            if (localIdx < crossSamples) {
+              gain = localIdx / crossSamples; // Giriş yumuşatma
+            } else if (localIdx >= pLen - crossSamples) {
+              gain = (pLen - localIdx) / crossSamples; // Çıkış yumuşatma
+            }
+            val += getSample(localIdx) * gain;
+          }
+
+          // Parça 3 (56s - 86s)
+          if (i >= p3Start && i < p3Start + pLen) {
+            const localIdx = i - p3Start;
+            let gain = 1;
+            if (localIdx < crossSamples) {
+              gain = localIdx / crossSamples; // Giriş yumuşatma
+            } else if (localIdx >= pLen - fadeOutSamples) {
+              gain = (pLen - localIdx) / fadeOutSamples; // 86. saniyede yavaşça çıkış (Fade-Out)
+            }
+            val += getSample(localIdx) * gain;
+          }
+
+          outData[i] = val;
+        }
+      }
+
+      return outBuffer;
+    }
+
+    async function playTrackAtIndex(index) {
       if (!currentPlaylist[index]) return;
       currentTrackIndex = index;
       const track = currentPlaylist[index];
 
-      audio.src = track.previewUrl;
-      audio.play().catch(() => {});
+      stopAudioEngine();
+
+      const bgCover = document.getElementById('bgCover');
+      const coverUrl = track.artworkUrl100 ? track.artworkUrl100.replace('100x100bb', '600x600bb') : '';
+      if (bgCover) {
+        bgCover.style.backgroundImage = `url('${coverUrl}')`;
+      }
 
       document.getElementById('playerBar').style.display = 'flex';
       document.getElementById('nowTitle').innerText = track.trackName;
@@ -764,6 +896,72 @@ function searchAlbums(query) {
       document.querySelectorAll('.track-card').forEach((c, i) => {
         c.classList.toggle('active', i === index);
       });
+
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
+      try {
+        const response = await fetch(track.previewUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const rawBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+        // Mixlenmiş tampon belleği üret
+        mixedBuffer = buildSeamlessMixBuffer(rawBuffer, isReverseMode);
+
+        elapsedBeforePause = 0;
+        playStartTime = performance.now();
+        isPlaying = true;
+
+        startWebAudioPlayback(0);
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(playbackLoop);
+      } catch (err) {
+        console.error('Audio load failed', err);
+      }
+    }
+
+    function toggleReverseMode() {
+      isReverseMode = !isReverseMode;
+      document.getElementById('reverseBtn').classList.toggle('active', isReverseMode);
+      
+      if (currentTrackIndex !== -1 && isPlaying) {
+        const currentPos = elapsedBeforePause + (performance.now() - playStartTime) / 1000;
+        playTrackAtIndex(currentTrackIndex).then(() => {
+          elapsedBeforePause = currentPos;
+          playStartTime = performance.now();
+          startWebAudioPlayback(currentPos);
+        });
+      }
+    }
+
+    function startWebAudioPlayback(targetTime) {
+      if (currentSource) {
+        try { currentSource.stop(); } catch(e){}
+      }
+
+      gainNode = audioCtx.createGain();
+      gainNode.connect(audioCtx.destination);
+
+      currentSource = audioCtx.createBufferSource();
+      currentSource.buffer = mixedBuffer;
+      currentSource.loop = true;
+
+      let singleDur = mixedBuffer.duration;
+      let offset = targetTime % singleDur;
+
+      currentSource.connect(gainNode);
+      currentSource.start(0, offset);
+    }
+
+    function stopAudioEngine() {
+      isPlaying = false;
+      cancelAnimationFrame(animationFrameId);
+      if (currentSource) {
+        try { currentSource.stop(); } catch(e){}
+        currentSource = null;
+      }
+      mixedBuffer = null;
     }
 
     function playNextTrack() {
@@ -780,8 +978,89 @@ function searchAlbums(query) {
       playTrackAtIndex(prevIndex);
     }
 
-    function onAudioEnded() {
-      playNextTrack();
+    function togglePlay() {
+      if (!mixedBuffer) return;
+
+      if (isPlaying) {
+        isPlaying = false;
+        elapsedBeforePause += (performance.now() - playStartTime) / 1000;
+        if (currentSource) {
+          try { currentSource.stop(); } catch(e){}
+        }
+        cancelAnimationFrame(animationFrameId);
+        setPlayIcon(false);
+      } else {
+        isPlaying = true;
+        playStartTime = performance.now();
+        startWebAudioPlayback(elapsedBeforePause);
+        animationFrameId = requestAnimationFrame(playbackLoop);
+        setPlayIcon(true);
+      }
+    }
+
+    function stopTrack() {
+      stopAudioEngine();
+      currentTrackIndex = -1;
+      const bgCover = document.getElementById('bgCover');
+      if (bgCover) {
+        bgCover.style.backgroundImage = 'none';
+      }
+      document.getElementById('playerBar').style.display = 'none';
+      document.querySelectorAll('.track-card').forEach(c => c.classList.remove('active'));
+    }
+
+    function setPlayIcon(playing) {
+      const icon = document.getElementById('playIcon');
+      if (playing) {
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      } else {
+        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      }
+    }
+
+    function playbackLoop() {
+      if (!isPlaying || !mixedBuffer) return;
+
+      let currentTime = elapsedBeforePause + (performance.now() - playStartTime) / 1000;
+
+      if (currentTime >= TARGET_DURATION) {
+        playNextTrack();
+        return;
+      }
+
+      const pct = (currentTime / TARGET_DURATION) * 100;
+      document.getElementById('progressFill').style.width = Math.min(100, pct) + '%';
+
+      const sec = Math.floor(currentTime);
+      const currentMin = Math.floor(sec / 60);
+      const currentSec = sec % 60;
+      document.getElementById('currentTime').innerText = `${currentMin}:${currentSec < 10 ? '0' : ''}${currentSec}`;
+
+      animationFrameId = requestAnimationFrame(playbackLoop);
+    }
+
+    function seekAudio(e) {
+      if (!mixedBuffer) return;
+
+      const bar = e.currentTarget;
+      const rect = bar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+
+      const newTime = pct * TARGET_DURATION;
+
+      elapsedBeforePause = newTime;
+      playStartTime = performance.now();
+
+      if (isPlaying) {
+        startWebAudioPlayback(newTime);
+      }
+
+      const sec = Math.floor(newTime);
+      const currentMin = Math.floor(sec / 60);
+      const currentSec = sec % 60;
+      document.getElementById('currentTime').innerText = `${currentMin}:${currentSec < 10 ? '0' : ''}${currentSec}`;
+      document.getElementById('progressFill').style.width = Math.min(100, pct * 100) + '%';
     }
 
     function backToPreviousView() {
@@ -802,56 +1081,6 @@ function searchAlbums(query) {
       }
     }
 
-    function togglePlay() {
-      if (!audio.src) return;
-      if (audio.paused) {
-        audio.play().catch(() => {});
-        setPlayIcon(true);
-      } else {
-        audio.pause();
-        setPlayIcon(false);
-      }
-    }
-
-    function stopTrack() {
-      audio.pause();
-      audio.currentTime = 0;
-      currentTrackIndex = -1;
-      document.getElementById('playerBar').style.display = 'none';
-      document.querySelectorAll('.track-card').forEach(c => c.classList.remove('active'));
-    }
-
-    function setPlayIcon(isPlaying) {
-      const icon = document.getElementById('playIcon');
-      if (isPlaying) {
-        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-      } else {
-        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-      }
-    }
-
-    function updateProgress() {
-      if (!audio.duration) return;
-      const pct = (audio.currentTime / audio.duration) * 100;
-      document.getElementById('progressFill').style.width = pct + '%';
-
-      const sec = Math.floor(audio.currentTime);
-      const dur = Math.floor(audio.duration);
-      document.getElementById('currentTime').innerText = `0:${sec < 10 ? '0' : ''}${sec}`;
-      if (!isNaN(dur)) {
-        document.getElementById('durationTime').innerText = `0:${dur < 10 ? '0' : ''}${dur}`;
-      }
-    }
-
-    function seekAudio(e) {
-      if (!audio.duration) return;
-      const bar = e.currentTarget;
-      const rect = bar.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const pct = clickX / rect.width;
-      audio.currentTime = pct * audio.duration;
-    }
-
     function escapeHtml(text) {
       return (text || '').replace(/[&<>"']/g, m => ({
         '&': '&amp;',
@@ -865,27 +1094,10 @@ function searchAlbums(query) {
     loadTopSongs();
     window.addEventListener('resize', updateContentPosition);
 
-const searchInput = document.getElementById('search');
-
-// Tarayıcının 'focus' title'ı eklemesini anında engeller
-searchInput.addEventListener('focus', function () {
-  this.removeAttribute('title');
-});
-
-searchInput.addEventListener('mouseover', function () {
-  this.removeAttribute('title');
-});
-
-// Arama dinleyicisi
-searchInput.addEventListener('input', function (e) {
-  debounceSearch(e.target.value);
-});
-
-
-setInterval(() => {
-  document.getElementById('search').removeAttribute('title');
-}, 100);
-
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', function (e) {
+      debounceSearch(e.target.value);
+    });
   </script>
 </body>
 </html>
